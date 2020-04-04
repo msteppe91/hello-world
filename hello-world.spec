@@ -1,12 +1,10 @@
-# Short-handed ifdef()
-%{!?_sourcedir: %define _sourcedir $(pwd)}
-
 Name:           hello-world
 Version:        1.0.0
 Release:        1%{?dist}
 Summary:        Simple "Hello World" C++ RPM
-License:	None
+License:        None
 URL:            https://github.com/msteppe91/hello-world
+AutoReqProv:    no
 
 BuildRequires:  gcc
 
@@ -14,22 +12,16 @@ BuildRequires:  gcc
 Simple "Hello World" C++ application written to test RPMs on Fedora
 
 %prep
-echo "Source dir set to '%{_sourcedir}'"
+# Move source to %%_builddir (make sure it's empty first) and compile there
+%{__rm} -rf %{_builddir}/*
+%{__cp} -a %{_sourcedir}/* %{_builddir}
 
 %build
-# TODO: Write Makefile for C++ app instead of manual gcc call
-#%make_build
-g++ %{_sourcedir}/helloWorld.cpp -o hello
+%make_build
 
 %install
-rm -rf $RPM_BUILD_ROOT
-# TODO: Add install rule to Makefile when created
-#%make_install
-install -m 755 %{_builddir}/hello %{buildroot}
+%make_install DESTDIR=%{buildroot}/usr/local/bin/
 
 %files
 /usr/local/bin/hello
 
-%changelog
-* Fri Apr  3 2020 Michael Steppe <msteppe91@gmail.com>
-- 
